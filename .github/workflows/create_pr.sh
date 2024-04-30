@@ -10,6 +10,9 @@ curdir=$PWD
 
 rebase_branch=${today}
 
+git config --global user.email "glutenperfbot@intel-internal.com"
+git config --global user.name "glutenperfbot"
+
 # auto rebase velox
 cd /opt
 git clone -b main https://github.com/facebookincubator/velox
@@ -55,7 +58,7 @@ fi
 
 git checkout -b ${rebase_branch}
 git add .
-git ci -s -m "Rebase velox ($today)"
+git commit -s -m "Rebase velox ($today)"
 # Allow push failure if the branch exists (may have been pushed to bot velox repo mannually)
 git push oap
 
@@ -67,7 +70,7 @@ cd incubator-gluten/
 git checkout origin/main -b ${rebase_branch}
 sed -i "s/VELOX_BRANCH=2024.*/VELOX_BRANCH=${rebase_branch}/" ep/build-velox/src/get_velox.sh
 git add ep
-git ci -s -m "[VL] Daily Update Velox Version ($today)"
+git commit -s -m "[VL] Daily Update Velox Version ($today)"
 git remote add bot https://github.com/GlutenPerfBot/gluten
 git push bot
 
@@ -88,7 +91,7 @@ EOF
 curl -L \
   -X POST \
   -H "Accept: application/vnd.github+json" \
-  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Authorization: Bearer $2" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   -H "Content-Type:application/json" \
   https://api.github.com/repos/apache/incubator-gluten/pulls \

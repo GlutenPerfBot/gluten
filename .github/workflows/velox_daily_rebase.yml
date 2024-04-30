@@ -39,9 +39,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: rebase velox code and create gluten pr
         env:
-        TOKEN: ${{ secrets.BOT_TOKEN }}
+          TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
           # To avoid the prompt for region selection during installing tzdata.
           export DEBIAN_FRONTEND="noninteractive"
-          apt-get update && apt-get install -y sudo git
-          cd $GITHUB_WORKSPACE/.github/workflows && bash create_pr.sh
+          apt-get update && apt-get install -y sudo git curl
+          cd $GITHUB_WORKSPACE/.github/workflows && bash create_pr.sh failOnError ${TOKEN}
