@@ -68,6 +68,8 @@ jobs:
             ccache-centos7-release-default
       - name: Build Gluten native libraries
         run: |
+          which node
+          node -v
           df -a
           cd $GITHUB_WORKSPACE/
           bash dev/ci-velox-buildstatic-centos-7.sh
