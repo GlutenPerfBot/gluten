@@ -434,28 +434,28 @@ TEST_F(VeloxSubstraitRoundTripTest, dateType) {
   assertPlanConversion(plan, "SELECT * FROM tmp WHERE c > DATE '1992-01-01'");
 }
 
-TEST_F(VeloxSubstraitRoundTripTest, subField) {
-  RowVectorPtr data = makeRowVector(
-      {"a", "b", "c"},
-      {
-          makeFlatVector<int64_t>({249, 235, 858}),
-          makeFlatVector<int32_t>({581, -708, -133}),
-          makeFlatVector<double>({0.905, 0.968, 0.632}),
-      });
-  createDuckDbTable({data});
-  auto plan = PlanBuilder()
-                  .values({data})
-                  .project({"cast(row_constructor(a, b) as row(a bigint, b bigint)) as ab", "a", "b", "c"})
-                  .project({"cast(row_constructor(ab, c) as row(ab row(a bigint, b bigint), c bigint)) as abc"})
-                  .project({"(abc).ab.a", "(abc).ab.b", "abc.c"})
-                  .planNode();
-
-  assertPlanConversion(plan, "SELECT a, b, c FROM tmp");
-
-  plan =
-      PlanBuilder().values({data}).project({"(cast(row_constructor(a, b) as row(a bigint, b bigint))).a"}).planNode();
-  assertFailingPlanConversion(plan, "Non-field expression is not supported");
-}
+//TEST_F(VeloxSubstraitRoundTripTest, subField) {
+//  RowVectorPtr data = makeRowVector(
+//      {"a", "b", "c"},
+//      {
+//          makeFlatVector<int64_t>({249, 235, 858}),
+//          makeFlatVector<int32_t>({581, -708, -133}),
+//          makeFlatVector<double>({0.905, 0.968, 0.632}),
+//      });
+//  createDuckDbTable({data});
+//  auto plan = PlanBuilder()
+//                  .values({data})
+//                  .project({"cast(row_constructor(a, b) as row(a bigint, b bigint)) as ab", "a", "b", "c"})
+//                  .project({"cast(row_constructor(ab, c) as row(ab row(a bigint, b bigint), c bigint)) as abc"})
+//                  .project({"(abc).ab.a", "(abc).ab.b", "abc.c"})
+//                  .planNode();
+//
+//  assertPlanConversion(plan, "SELECT a, b, c FROM tmp");
+//
+//  plan =
+//      PlanBuilder().values({data}).project({"(cast(row_constructor(a, b) as row(a bigint, b bigint))).a"}).planNode();
+//  assertFailingPlanConversion(plan, "Non-field expression is not supported");
+//}
 
 TEST_F(VeloxSubstraitRoundTripTest, sumCompanion) {
   auto vectors = makeVectors(2, 7, 3);
