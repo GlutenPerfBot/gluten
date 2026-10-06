@@ -32,9 +32,9 @@
 #include <cudf/null_mask.hpp>
 #include <cudf/types.hpp>
 #include <cudf/utilities/type_dispatcher.hpp>
-#include <cuda/memory_resource>
 #include <rmm/cuda_stream_view.hpp>
 #include <rmm/device_buffer.hpp>
+#include <cuda/memory_resource>
 
 using namespace facebook::velox;
 
