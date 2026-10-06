@@ -32,6 +32,7 @@
 #include <cudf/null_mask.hpp>
 #include <cudf/types.hpp>
 #include <cudf/utilities/type_dispatcher.hpp>
+#include <cuda/memory_resource>
 #include <rmm/cuda_stream_view.hpp>
 #include <rmm/device_buffer.hpp>
 
@@ -125,8 +126,13 @@ struct DispatchColumn {
     rmm::device_buffer chars(valueBuffer->size(), stream, mr);
     CUDF_CUDA_TRY(cudaMemcpyAsync(
         chars.data(), valueBuffer->data_as<uint8_t>(), chars.size(), cudaMemcpyDefault, stream.value()));
+    // cuDF now requires cuda::device_buffer<std::byte> for the null mask argument.
+    auto* maskPtr = static_cast<std::byte*>(mask->data());
+    auto maskSize = mask->size();
+    mask->release(); // prevent rmm from freeing the memory; cuda::device_buffer takes ownership
+    cuda::device_buffer<std::byte> cudaMask(maskPtr, maskSize, stream);
     return cudf::make_strings_column(
-        numRows, std::move(offsetColumn), std::move(chars), nullCount, std::move(*mask.release()));
+        numRows, std::move(offsetColumn), std::move(chars), nullCount, std::move(cudaMask));
   }
 };
 
