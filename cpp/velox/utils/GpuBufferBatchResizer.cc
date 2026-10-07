@@ -127,8 +127,7 @@ struct DispatchColumn {
     rmm::device_buffer chars(valueBuffer->size(), stream, mr);
     CUDF_CUDA_TRY(cudaMemcpyAsync(
         chars.data(), valueBuffer->data_as<uint8_t>(), chars.size(), cudaMemcpyDefault, stream.value()));
-    return cudf::make_strings_column(
-        numRows, std::move(offsetColumn), std::move(chars), nullCount, std::move(mask));
+    return cudf::make_strings_column(numRows, std::move(offsetColumn), std::move(chars), nullCount, std::move(mask));
   }
 };
 
